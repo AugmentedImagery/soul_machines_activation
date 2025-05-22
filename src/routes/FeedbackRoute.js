@@ -57,7 +57,7 @@ function Feedback({ className }) {
           : null
       }
       <Header />
-      <div className="container">
+      <div className="feedback-wrapper">
         <FeedbackModal onClose={() => history.push('/loading')} closeText="Chat Again" />
       </div>
     </div>
@@ -67,8 +67,16 @@ function Feedback({ className }) {
 Feedback.propTypes = {
   className: PropTypes.string.isRequired,
 };
-export default styled(Feedback)`
 
+export default styled(Feedback)`
+  .feedback-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+    padding: 2rem 1rem;
+    width: 100%;
+  }
 
   .alert-modal {
     position: absolute;
@@ -80,6 +88,7 @@ export default styled(Feedback)`
     min-height: 100vh;
     background: rgba(0,0,0,0.3);
   }
+
   .alert-modal-card {
     background: #FFF;
     padding: 1.3rem;

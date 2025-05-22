@@ -1,26 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Star, StarFill } from 'react-bootstrap-icons';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import breakpoints from '../utils/breakpoints';
 import { landingBackgroundImage } from '../config';
 
-function FeedbackModal({
-  className, onClose, closeText, denyFeedbackText, denyFeedback,
-}) {
+function FeedbackModal({ className }) {
   const nStars = 5;
   const [rating, setRating] = useState(-1);
   const [ratingSelected, setRatingSelected] = useState(false);
+  const [hoverRating, setHoverRating] = useState(-1);
   const [submitted, setSubmitted] = useState(false);
+  const [writtenFeedback, setWrittenFeedback] = useState('');
 
+  const textareaRef = useRef(null);
   const history = useHistory();
+
+  // Auto-focus the textarea when rating is selected
+  // Handle keyboard input for star rating (1-5 keys) and Enter for submission
+  useEffect(() => {
+    if (ratingSelected && textareaRef.current) {
+      // Small delay to ensure the textarea is rendered
+      setTimeout(() => {
+        textareaRef.current.focus();
+      }, 100);
+    }
+  }, [ratingSelected]);
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const key = parseInt(event.key, 10);
+
+      // Handle number keys 1-5 for rating
+      if (key >= 1 && key <= 5 && !ratingSelected) {
+        const starIndex = key - 1;
+        setRating(starIndex);
+        setRatingSelected(true);
+        setHoverRating(-1);
+      }
+
+      // Handle Enter key for submission (only if rating is selected)
+      if (event.key === 'Enter' && ratingSelected) {
+        event.preventDefault();
+        setSubmitted(true);
+
+        // Navigate to landing page after showing thank you message
+        setTimeout(() => {
+          history.push('/');
+        }, 2000);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [history, ratingSelected]);
 
   // generate array of clickable stars for rating
   const stars = Array.from(Array(nStars)).map((_, i) => {
     const handleHover = () => {
-      if (!ratingSelected) setRating(i);
+      if (!ratingSelected) setHoverRating(i);
     };
+
+    const handleHoverLeave = () => {
+      if (!ratingSelected) setHoverRating(-1);
+    };
+
+    const effectiveRating = hoverRating >= 0 ? hoverRating : rating;
+
     return (
       <button
         // eslint-disable-next-line react/no-array-index-key
@@ -28,137 +77,103 @@ function FeedbackModal({
         className="star-wrapper"
         type="button"
         onMouseOver={handleHover}
+        onMouseLeave={handleHoverLeave}
         onFocus={handleHover}
         onClick={() => {
           setRating(i);
           setRatingSelected(true);
+          setHoverRating(-1);
         }}
+        aria-label={`Rate ${i + 1} stars`}
       >
         {
-        rating >= i
-          ? <StarFill className="star star-fill" fill="#212529" />
-          : <Star className="star star-outline" fill="#212529" />
-      }
+          effectiveRating >= i
+            ? <StarFill className="star star-fill" />
+            : <Star className="star star-outline" />
+        }
+        <span className="number-indicator">{i + 1}</span>
       </button>
     );
   });
 
-  // allow for custom input
-  const [customField, setCustomField] = useState('');
-  // default tags
-  const tagItems = ['Easy', 'Intuitive', 'Slow', 'Helpful', 'Personable', 'Laggy'];
-  const [selectedTags, setSelectedTags] = useState([]);
-  const handleSelectTag = (t) => {
-    const tagIsSelected = selectedTags.indexOf(t) > -1;
-    if (tagIsSelected === false) setSelectedTags([...selectedTags, t]);
-    else setSelectedTags([...selectedTags.filter((v) => v !== t)]);
+  const getRatingText = () => {
+    if (rating < 0) return '';
+
+    const ratingTexts = [
+      'Poor', 'Fair', 'Good', 'Very Good', 'Excellent!',
+    ];
+    return ratingTexts[rating];
   };
 
   return (
     <div className={className}>
       <div className="feedback-container">
-        <div className="row d-flex justify-content-center">
-          <div className="tutorial-icon tutorial-icon-dp mb-2" />
+        <div className="avatar-wrapper">
+          <div className="avatar-circle" />
         </div>
+
         {submitted ? (
-          <div>
-            <div className="row text-center">
-              <h2>Thank you for your feedback.</h2>
-              <p>Want to keep chatting? If not, we can end our conversation.</p>
-            </div>
-            <div className="row">
-              <div className="d-flex justify-content-center">
-                <button
-                  onClick={onClose}
-                  type="button"
-                  className="btn btn-dark me-4"
-                >
-                  {closeText}
-                </button>
-                <Link to="/" className="btn btn-outline-dark" type="button">
-                  I&apos;m Done
-                </Link>
+          <div className="thank-you-container">
+            <div className="success-icon">✓</div>
+            <h2>Thank you for your feedback!</h2>
+            <p>
+              Your rating:
+              {' '}
+              {getRatingText()}
+            </p>
+            {writtenFeedback && (
+              <div className="submitted-feedback">
+                <p><strong>Your feedback:</strong></p>
+                <p>
+                  &quot;
+                  {writtenFeedback}
+                  &quot;
+                </p>
               </div>
-            </div>
+            )}
+            <p className="redirect-message">Returning to home page...</p>
           </div>
         ) : (
-          <div>
-            <div className="row">
-              <h2 className="text-center">
-                Can you rate your experience with Digital Persona A?
-              </h2>
+          <div className="feedback-form">
+            <h2>
+              How was your experience?
+            </h2>
+
+            <div className="stars-container">
+              {stars}
             </div>
-            <div className="row">
-              <div
-                className="justify-content-center d-flex"
-                onMouseLeave={() => {
-                  if (!ratingSelected) setRating(-1);
-                }}
-              >
-                {stars}
-              </div>
+
+            <div className="keyboard-hint">
+              Press keys 1-5 to rate
             </div>
-            <hr />
-            <div className="row">
-              <h3>How would you describe your experience?</h3>
-              <div>(Select all that apply)</div>
-              <div className="mt-3">
-                {/* combine default tags and custom ones to display as one list */}
-                {/* user can click on default tags to deselect and custom ones to edit */}
-                {tagItems.map((t) => (
-                  <button
-                    className={`rating-tag ${
-                      selectedTags.indexOf(t) > -1 ? 'rating-tag-selected' : ''
-                    }`}
-                    type="button"
-                    onClick={() => handleSelectTag(t)}
-                    key={t}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
+
+            <div className="rating-label">
+              {rating >= 0 && (
+                <span className="rating-badge">
+                  {getRatingText()}
+                </span>
+              )}
             </div>
-            <div className="row">
-              <h3 style={{ marginTop: '10px' }}>Can you tell us more?</h3>
-              {/* field for custom tags, limited to 20 chars */}
-              <div
-                className="d-flex custom-items"
-                style={{ width: '100%', height: '100px', marginTop: '10px' }}
-              >
-                <textarea
-                  type="text"
-                  className="form-control me-2"
-                  onChange={(e) => {
-                    const t = e.target.value;
-                    if (t.length < 265) setCustomField(t);
-                  }}
-                  value={customField}
-                />
-              </div>
-              <div className="row mt-3">
-                <div className="justify-content-end d-flex">
-                  <button
-                    onClick={() => (denyFeedback ? denyFeedback() : history.push('/'))}
-                    type="button"
-                    className="btn btn-outline-dark me-2"
-                  >
-                    { denyFeedbackText || 'No Thanks' }
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-dark"
-                    disabled={!ratingSelected}
-                    onClick={() => {
-                      setSelectedTags([...selectedTags, customField]);
-                      setSubmitted(true);
-                    }}
-                  >
-                    Submit
-                  </button>
+
+            {ratingSelected && (
+              <div className="written-feedback-section">
+                <h3>Tell us more about your experience (optional)</h3>
+                <div className="textarea-wrapper">
+                  <textarea
+                    ref={textareaRef}
+                    className="feedback-textarea"
+                    placeholder="Type your feedback here..."
+                    value={writtenFeedback}
+                    onChange={(e) => setWrittenFeedback(e.target.value)}
+                    rows={4}
+                    maxLength={500}
+                  />
+                </div>
+                <div className="submit-instruction">
+                  Press Enter to submit your feedback
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
@@ -168,94 +183,272 @@ function FeedbackModal({
 
 FeedbackModal.propTypes = {
   className: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
-  closeText: PropTypes.string,
-};
-
-FeedbackModal.defaultProps = {
-  closeText: 'Close',
 };
 
 export default styled(FeedbackModal)`
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  .feedback-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    max-width: 550px;
+    width: 100%;
+    margin: 0 auto;
+
+    @media (max-width: ${breakpoints.sm}px) {
+      padding: 1.5rem;
+    }
+  }
+
+  .avatar-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .avatar-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 55px;
+    background-image: url(${landingBackgroundImage});
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    border: 4px solid white;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: ${breakpoints.sm}px) {
+      width: 90px;
+      height: 90px;
+      border-radius: 45px;
+    }
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    text-align: center;
+    color: #1a202c;
+    margin-bottom: 1.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+
+    @media (max-width: ${breakpoints.sm}px) {
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+  }
+
+  p {
+    text-align: center;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .stars-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
   .star-wrapper {
     display: inline;
     border: none;
-    background: #FFF;
+    background: transparent;
+    padding: 0.5rem;
+    margin: 0 0.25rem;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+    position: relative;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    @media (min-width: ${breakpoints.sm}px) {
+      padding: 0.5rem;
+      margin: 0 0.5rem;
+    }
+
+    @media (min-width: ${breakpoints.md}px) {
+      padding: 0.5rem;
+      margin: 0 0.75rem;
+    }
+
+    .number-indicator {
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4a5568;
+    }
   }
+
   .star {
     width: 2rem;
     height: 2rem;
-    margin: .4rem;
 
     @media (min-width: ${breakpoints.sm}px) {
-      width: 2.6rem;
-      height: 2.6rem;
-      margin: 1rem;
+      width: 2.5rem;
+      height: 2.5rem;
     }
     @media (min-width: ${breakpoints.md}px) {
-      width: 3.5rem;
-      height: 3.5rem;
-      margin: 1rem;
+      width: 3rem;
+      height: 3rem;
     }
   }
-  .rating-tag {
-    display: inline;
-    margin-right: 0.6rem;
-    margin-bottom: 0.6rem;
-    padding: .5rem;
 
-    font-size: 1.3rem;
+  .star-fill {
+    color: #f59e0b;
+    filter: drop-shadow(0 3px 6px rgba(245, 158, 11, 0.35));
+  }
 
-    background: #FFF;
-    border: 1px solid gray;
-    border-radius: 5px;
+  .star-outline {
+    color: #e2e8f0;
+  }
 
-    max-width: 15rem;
+  .keyboard-hint {
+    text-align: center;
+    margin: 2rem 0 1rem;
+    font-size: 0.9rem;
+    color: #718096;
+    background: #f7fafc;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .rating-label {
+    text-align: center;
+    height: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    &.rating-tag-selected {
-      background: #212529;
-      color: #FFF;
-      &:hover {
-        background: #0e1012;
-        color: #FFF;
+  .rating-badge {
+    font-weight: 600;
+    color: #4a5568;
+    background-color: #f7fafc;
+    padding: 0.5rem 1.25rem;
+    border-radius: 100px;
+    font-size: 1rem;
+    display: inline-block;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+
+    @media (max-width: ${breakpoints.sm}px) {
+      flex-direction: column;
+    }
+  }
+
+  .thank-you-container {
+    text-align: center;
+
+    .success-icon {
+      width: 65px;
+      height: 65px;
+      background: #10b981;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 10px 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+
+      @media (max-width: ${breakpoints.sm}px) {
+        flex-direction: column;
       }
     }
-    &:hover {
-      background: #DCDCDC;
-    }
-
   }
 
-  .custom-items {
-    width: 20rem;
-
-    button, input {
-      font-size: 1.3rem;
-      padding: .5rem;
-    }
-    input {
-      border: 1px solid gray;
-    }
-  }
-
-  .tutorial-icon {
-    width: 180px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-
-    display: flex;
+  .btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
 
-    background-color: #EAEAEA;
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: ${breakpoints.sm}px) {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
   }
-  .tutorial-icon-dp {
-    background-image: url(${landingBackgroundImage});
-    background-size: cover;
-    background-position: bottom center;
+
+  .primary-btn {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+
+    &:hover:not(:disabled) {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+
+  .secondary-btn {
+    background: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+
+    &:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: #cbd5e0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(-1px);
+    }
   }
 `;
