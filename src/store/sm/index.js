@@ -161,7 +161,10 @@ export const disconnect = createAsyncThunk('sm/disconnect', async (args, thunk) 
 export const createScene = createAsyncThunk('sm/createScene', async (_, thunk) => {
   /* CREATE SCENE */
   if (scene !== null) {
-    return console.error('warning! you attempted to create a new scene, when one already exists!');
+    console.warn('Scene already exists, disconnecting first...');
+    scene.disconnect();
+    scene = null;
+    persona = null;
   }
   // request permissions from user and create instance of Scene and ask for webcam/mic permissions
   const { requestedMediaPerms } = thunk.getState().sm;
@@ -270,6 +273,7 @@ export const createScene = createAsyncThunk('sm/createScene', async (_, thunk) =
   scene.onMessage = (message) => {
     // removing this will break smwebsdk eventing, call smwebsdk's message handler
     smwebsdkOnMessage(message);
+    console.log('Message received:', message.name, message.body);
     switch (message.name) {
       // handles output from TTS (what user said)
       case ('recognizeResults'): {

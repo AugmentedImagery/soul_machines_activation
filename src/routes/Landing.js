@@ -1,32 +1,27 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 function Landing({ className }) {
   const history = useHistory();
-  const location = useLocation();
 
   useEffect(() => {
-    // Check if we're coming from feedback or other routes that need a fresh start
-    // If there's any indication we need to refresh, do a full page reload
-    const needsRefresh = sessionStorage.getItem('needsRefresh');
+    // Check if we need to force refresh after feedback completion
+    const forceRefresh = sessionStorage.getItem('forceRefreshAfterFeedback');
 
-    if (needsRefresh === 'true') {
-      // Clear the flag first
-      sessionStorage.removeItem('needsRefresh');
-      // Force a full page refresh to completely reset everything
-      window.location.reload();
-      return;
-    }
+    if (forceRefresh === 'true') {
+      // Clear the flag first to prevent infinite loops
+      sessionStorage.removeItem('forceRefreshAfterFeedback');
 
-    // Set flag for future visits (like after feedback)
-    // This will trigger refresh on next landing page visit
-    if (location.state?.fromFeedback || document.referrer.includes('/feedback')) {
-      sessionStorage.setItem('needsRefresh', 'true');
-      window.location.reload();
+      // Clear all storage to ensure no cached state
+      sessionStorage.clear();
+      localStorage.clear();
+
+      // Force hard reload by reloading the current page
+      window.location.reload(true);
     }
-  }, [location]);
+  }, []);
 
   useEffect(() => {
     const handleKeyPress = () => {

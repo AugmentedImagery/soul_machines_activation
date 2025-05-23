@@ -7,7 +7,7 @@ import PersonaVideo from '../components/PersonaVideo';
 import Captions from '../components/Captions';
 import ContentCardDisplay from '../components/ContentCardDisplay';
 import {
-  disconnect, sendEvent, setVideoDimensions, setMicOn,
+  disconnect, sendEvent, setVideoDimensions, setMicOn, clearTranscript,
 } from '../store/sm/index';
 import Header from '../components/Header';
 import {
@@ -63,10 +63,13 @@ function DPChat({
           setShowWarning(true);
         }
 
-        // Time's up - redirect to feedback
+        // Time's up - force complete refresh after feedback
         if (newTime <= 0) {
           clearInterval(timer);
-          history.push('/feedback');
+          // Clear all storage and force hard reload to feedback
+          sessionStorage.clear();
+          localStorage.clear();
+          window.location.href = `/feedback?refresh=${Date.now()}`;
           return 0;
         }
 
@@ -98,8 +101,23 @@ function DPChat({
   };
 
   useEffect(() => {
+    // CLEAR SOUL MACHINES SESSION PERSISTENCE DATA for fresh session
+    sessionStorage.removeItem('sm-session-id');
+    sessionStorage.removeItem('sm-api-key');
+    sessionStorage.removeItem('sm-server');
+
+    // Also clear any other SM-related session data that might persist
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith('sm-') || key.startsWith('soul-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+
     // send init event, since we will finish loading before we display the DP
     dispatch(sendEvent({ eventName: '', payload: {}, kind: 'init' }));
+
+    // CLEAR TRANSCRIPT at start of new chat session to ensure fresh experience
+    dispatch(clearTranscript());
 
     // ALWAYS enable mic but keep old transcript hidden (our new STTFeedback is always visible)
     dispatch(setMicOn({ micOn: true }));

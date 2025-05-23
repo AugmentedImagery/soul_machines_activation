@@ -51,12 +51,19 @@ function Feedback({ className }) {
         event.preventDefault();
         setSubmitted(true);
 
-        // Set flag to trigger page refresh when returning to landing
-        sessionStorage.setItem('needsRefresh', 'true');
-
-        // Navigate to landing page after showing thank you message
+        // Navigate to landing page after showing thank you message and force hard refresh
         setTimeout(() => {
-          history.push('/');
+          // Clear Soul Machines session persistence data
+          sessionStorage.removeItem('sm-session-id');
+          sessionStorage.removeItem('sm-api-key');
+          sessionStorage.removeItem('sm-server');
+
+          // Clear all other cached data
+          sessionStorage.clear();
+          localStorage.clear();
+
+          // Force complete page reload to root with cache busting
+          window.location.href = `/?refresh=${Date.now()}`;
         }, 2000);
       }
     };

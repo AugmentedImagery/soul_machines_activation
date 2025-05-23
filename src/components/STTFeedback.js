@@ -9,9 +9,34 @@ function STTFeedback({ className }) {
   } = useSelector(({ sm }) => ({ ...sm }));
 
   // Get recent transcript entries (text only) - show more messages
-  const transcriptOnlyText = transcript.filter((t) => 'text' in t);
-  // Show last 8 messages, most recent first
-  const recentTranscript = transcriptOnlyText.slice(-8).reverse();
+  // Filter out system messages and metadata that aren't actual conversation
+  const transcriptOnlyText = transcript.filter((t) => {
+    // Only include entries with actual text content
+    if (!('text' in t) || !t.text) return false;
+
+    // Filter out system/metadata messages
+    const systemKeywords = [
+      'PAGE_METADATA',
+      'SYSTEM',
+      'METADATA',
+      'CONNECTION',
+      'SESSION',
+      '__system__',
+      'sm-',
+      'soul-',
+    ];
+
+    // Check if the message contains system keywords
+    const isSysMsg = systemKeywords.some((kw) => t.text.toLowerCase().includes(kw.toLowerCase()));
+
+    // Only include non-system messages with actual conversational content
+    return !isSysMsg && t.text.trim().length > 0;
+  });
+
+  // Show last 8 messages, most recent first - only if we have actual conversation
+  const recentTranscript = transcriptOnlyText.length > 0
+    ? transcriptOnlyText.slice(-8).reverse()
+    : [];
 
   return (
     <div className={className}>
