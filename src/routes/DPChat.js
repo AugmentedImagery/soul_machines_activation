@@ -30,13 +30,18 @@ function DPChat({
   const dispatch = useDispatch();
   const history = useHistory();
 
-  // Ensure mic stays enabled but let transcript stay hidden (we have our own)
+  // Timer state - 3 minute session with 30 second warning
+  const [, setTimeLeft] = useState(180); // 3 minutes in seconds
+  const [showWarning, setShowWarning] = useState(false);
+
+  // Ensure mic stays enabled
   useEffect(() => {
     if (connected && !micOn) {
       dispatch(setMicOn({ micOn: true }));
     }
   }, [connected, micOn, dispatch]);
 
+  // Navigation logic
   if (disconnected === true) {
     if (disconnectPage) {
       history.push(disconnectRoute);
@@ -44,6 +49,33 @@ function DPChat({
   } else if (error !== null) history.push('/loading?error=true');
   // usually this will be triggered when the user refreshes
   else if (connected !== true) history.push('/');
+
+  // Timer effect - 3 minute session with 30 second warning
+  useEffect(() => {
+    if (!connected) return undefined;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        const newTime = prevTime - 1;
+
+        // Show warning at 30 seconds (2:30 mark)
+        if (newTime === 30 && !showWarning) {
+          setShowWarning(true);
+        }
+
+        // Time's up - redirect to feedback
+        if (newTime <= 0) {
+          clearInterval(timer);
+          history.push('/feedback');
+          return 0;
+        }
+
+        return newTime;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [connected, showWarning, history]);
 
   const handleResize = () => {
     if (connected) {
@@ -97,6 +129,15 @@ function DPChat({
   return (
     <div className={className}>
       <div className="chat-overlay">
+        {/* Timer Warning */}
+        {showWarning && (
+          <div className="timer-warning">
+            <div className="warning-content">
+              <div className="warning-text">30 Seconds left in this interaction</div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="header-section">
           <Header />
@@ -159,6 +200,55 @@ export default styled(DPChat)`
   .header-section {
     pointer-events: auto;
     flex-shrink: 0;
+    position: relative;
+  }
+
+  .timer-warning {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100;
+    pointer-events: none;
+    animation: slideInWarning 0.5s ease-out;
+  }
+
+  @keyframes slideInWarning {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .warning-content {
+    background: rgba(255, 96, 2, 0.95);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(255, 96, 2, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: pulse 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    from {
+      box-shadow: 0 8px 25px rgba(255, 96, 2, 0.3);
+    }
+    to {
+      box-shadow: 0 8px 25px rgba(255, 96, 2, 0.6);
+    }
+  }
+
+  .warning-text {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
   .main-content {

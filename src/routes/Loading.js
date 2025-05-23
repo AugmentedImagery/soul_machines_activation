@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { createScene } from '../store/sm';
 import Header from '../components/Header';
 import { headerHeight } from '../config';
+import backgroundImage from '../img/Background_001.png';
 
 function Loading({ className }) {
   const {
@@ -69,7 +70,9 @@ Loading.propTypes = {
 };
 
 export default styled(Loading)`
-  background: linear-gradient(135deg, #0066ff, #66b3ff, #ffffff);
+  background:
+    url(${backgroundImage}) center/cover no-repeat,
+    linear-gradient(135deg, #0066ff, #66b3ff, #ffffff);
   width: 100vw;
   height: 100vh;
   font-family: sans-serif;

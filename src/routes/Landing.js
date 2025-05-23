@@ -1,13 +1,37 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 function Landing({ className }) {
   const history = useHistory();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if we're coming from feedback or other routes that need a fresh start
+    // If there's any indication we need to refresh, do a full page reload
+    const needsRefresh = sessionStorage.getItem('needsRefresh');
+
+    if (needsRefresh === 'true') {
+      // Clear the flag first
+      sessionStorage.removeItem('needsRefresh');
+      // Force a full page refresh to completely reset everything
+      window.location.reload();
+      return;
+    }
+
+    // Set flag for future visits (like after feedback)
+    // This will trigger refresh on next landing page visit
+    if (location.state?.fromFeedback || document.referrer.includes('/feedback')) {
+      sessionStorage.setItem('needsRefresh', 'true');
+      window.location.reload();
+    }
+  }, [location]);
 
   useEffect(() => {
     const handleKeyPress = () => {
+      // Clear any refresh flags when starting new session
+      sessionStorage.removeItem('needsRefresh');
       history.push('/loading');
     };
 
@@ -24,9 +48,9 @@ function Landing({ className }) {
       <div className="overlay-content">
         {/* <h1>Meet Ave!</h1>
         <h4>Ave is a digital Axios CEO. She is an expert in Journalism, A.I., and Axios.</h4> */}
-        <Link to="/loading" className="chat-button">
+        {/* <Link to="/loading" className="chat-button">
           PRESS ANY KEY TO START
-        </Link>
+        </Link> */}
         {/* <p className="terms">
           Link terms & conditions or company website here:
           <br />

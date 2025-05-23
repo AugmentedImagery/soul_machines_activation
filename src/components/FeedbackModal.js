@@ -158,10 +158,10 @@ function FeedbackModal({ className }) {
             {ratingSelected && (
               <div className="written-feedback-section">
                 <h3>Tell us more about your experience (optional)</h3>
-                <div className="textarea-wrapper">
+                <div className="textarea-grid-container">
                   <textarea
                     ref={textareaRef}
-                    className="feedback-textarea"
+                    className="feedback-textarea full-width-textarea"
                     placeholder="Type your feedback here..."
                     value={writtenFeedback}
                     onChange={(e) => setWrittenFeedback(e.target.value)}

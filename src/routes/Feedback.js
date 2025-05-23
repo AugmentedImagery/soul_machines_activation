@@ -51,6 +51,9 @@ function Feedback({ className }) {
         event.preventDefault();
         setSubmitted(true);
 
+        // Set flag to trigger page refresh when returning to landing
+        sessionStorage.setItem('needsRefresh', 'true');
+
         // Navigate to landing page after showing thank you message
         setTimeout(() => {
           history.push('/');
