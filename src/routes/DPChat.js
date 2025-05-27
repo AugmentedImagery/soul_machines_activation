@@ -25,6 +25,7 @@ function DPChat({
     disconnected,
     error,
     micOn,
+    // speechState,
   } = useSelector(({ sm }) => ({ ...sm }));
 
   const dispatch = useDispatch();
@@ -40,6 +41,17 @@ function DPChat({
       dispatch(setMicOn({ micOn: true }));
     }
   }, [connected, micOn, dispatch]);
+
+  // Add effect to manage mic based on speech state
+  // useEffect(() => {
+  //   if (speechState !== 'speaking' && micOn) {
+  //     // AI is speaking, mute the mic
+  //     dispatch(setMicOn({ micOn: false }));
+  //   } else if (speechState === 'speaking' && !micOn) {
+  //     // AI finished speaking, unmute the mic
+  //     dispatch(setMicOn({ micOn: true }));
+  //   }
+  // }, [speechState, micOn, dispatch]);
 
   // Navigation logic
   if (disconnected === true) {

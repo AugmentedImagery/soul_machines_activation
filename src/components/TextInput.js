@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Send } from 'react-bootstrap-icons';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import { sendTextMessage } from '../store/sm';
 
 function TextInput({ className }) {
   const [textInput, setText] = useState('');
   const dispatch = useDispatch();
-  const history = useHistory();
+  // const history = useHistory();
   const inputRef = useRef(null);
 
   const handleInput = (e) => setText(e.target.value);
@@ -33,7 +33,11 @@ function TextInput({ className }) {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
-        history.push('/feedback');
+        // Clear all storage and force hard reload to feedback (same as timer)
+        sessionStorage.clear();
+        localStorage.clear();
+        // history.push('/feedback');
+        window.location.href = `/feedback?refresh=${Date.now()}`;
       }
     };
 
@@ -42,7 +46,7 @@ function TextInput({ className }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [history]);
+  }, []);
 
   return (
     <div className={className}>

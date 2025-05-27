@@ -35,7 +35,7 @@ function STTFeedback({ className }) {
 
   // Show last 8 messages, most recent first - only if we have actual conversation
   const recentTranscript = transcriptOnlyText.length > 0
-    ? transcriptOnlyText.slice(-8).reverse()
+    ? transcriptOnlyText.slice(-3).reverse()
     : [];
 
   return (
