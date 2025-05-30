@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { createScene } from '../store/sm';
-import Header from '../components/Header';
+// import Header from '../components/Header';
 import { headerHeight } from '../config';
-import backgroundImage from '../img/Background_001.png';
+import backgroundImage from '../img/gradient-3.png';
 
 function Loading({ className }) {
   const {
@@ -44,7 +44,7 @@ function Loading({ className }) {
 
   return (
     <div className={className}>
-      <Header />
+      {/* <Header /> */}
       <div className="loading-wrapper">
         <div className="progress-block">
           <div

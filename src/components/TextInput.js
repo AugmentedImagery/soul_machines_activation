@@ -76,7 +76,7 @@ function TextInput({ className }) {
           {' '}
           <kbd>ESC</kbd>
           {' '}
-          to exit and provide feedback
+          to exit
         </div>
       </div>
     </div>

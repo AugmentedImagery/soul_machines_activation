@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import breakpoints from '../utils/breakpoints';
 import { landingBackgroundImage } from '../config';
+import backgroundImage from '../img/gradient-3.png';
 
 function FeedbackModal({ className }) {
   const nStars = 5;
@@ -166,11 +167,11 @@ function FeedbackModal({ className }) {
                     value={writtenFeedback}
                     onChange={(e) => setWrittenFeedback(e.target.value)}
                     rows={4}
-                    maxLength={500}
+                    maxLength={1000}
                   />
                 </div>
                 <div className="submit-instruction">
-                  Press Enter to submit your feedback
+                  <p>Press Enter to continue</p>
                 </div>
               </div>
             )}
@@ -189,7 +190,9 @@ export default styled(FeedbackModal)`
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   .feedback-container {
-    background: white;
+    background:
+      url(${backgroundImage}) center/cover no-repeat,
+      linear-gradient(135deg, #0066ff, #66b3ff, #ffffff);
     border-radius: 20px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     padding: 2.5rem;
@@ -202,6 +205,15 @@ export default styled(FeedbackModal)`
     }
   }
 
+  .feedback-textarea{
+    justify-content: center;
+    width: 100%;
+  }
+
+  .textarea{
+    justify-content: center;
+    width: 100%;
+  }
   .avatar-wrapper {
     display: flex;
     justify-content: center;
@@ -233,7 +245,7 @@ export default styled(FeedbackModal)`
   h2 {
     font-size: 1.75rem;
     text-align: center;
-    color: #1a202c;
+    color: white;
     margin-bottom: 1.75rem;
     font-weight: 700;
     line-height: 1.3;
@@ -244,9 +256,14 @@ export default styled(FeedbackModal)`
     }
   }
 
+  h3 {
+    color: white;
+    text-align: center;
+  }
+
   p {
     text-align: center;
-    color: #4a5568;
+    color: white;
     margin-bottom: 1.5rem;
     font-size: 1.1rem;
     line-height: 1.6;
@@ -290,7 +307,7 @@ export default styled(FeedbackModal)`
       transform: translateX(-50%);
       font-size: 0.875rem;
       font-weight: 600;
-      color: #4a5568;
+      color:rgb(157, 161, 168);
     }
   }
 
@@ -371,7 +388,7 @@ export default styled(FeedbackModal)`
     .success-icon {
       width: 65px;
       height: 65px;
-      background: #10b981;
+      background: #0066ff;
       color: white;
       border-radius: 50%;
       display: flex;

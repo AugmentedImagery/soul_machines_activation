@@ -9,7 +9,7 @@ import ContentCardDisplay from '../components/ContentCardDisplay';
 import {
   disconnect, sendEvent, setVideoDimensions, setMicOn, clearTranscript,
 } from '../store/sm/index';
-import Header from '../components/Header';
+// import Header from '../components/Header';
 import {
   disconnectPage, disconnectRoute,
 } from '../config';
@@ -169,9 +169,9 @@ function DPChat({
         )}
 
         {/* Header */}
-        <div className="header-section">
+        {/* <div className="header-section">
           <Header />
-        </div>
+        </div> */}
 
         {/* Main Content Area */}
         <div className="main-content" ref={ccDisplaRef}>

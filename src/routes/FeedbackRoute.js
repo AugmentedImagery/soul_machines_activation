@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { XCircle } from 'react-bootstrap-icons';
-import Header from '../components/Header';
+// import Header from '../components/Header';
 import FeedbackModal from '../components/FeedbackModal';
+import backgroundImage from '../img/gradient-3.png';
 
 function Feedback({ className }) {
   const { presumeTimeout } = useSelector(({ sm }) => ({ ...sm }));
@@ -56,7 +57,7 @@ function Feedback({ className }) {
           )
           : null
       }
-      <Header />
+      {/* <Header /> */}
       <div className="feedback-wrapper">
         <FeedbackModal onClose={() => history.push('/loading')} closeText="Chat Again" />
       </div>
@@ -69,6 +70,11 @@ Feedback.propTypes = {
 };
 
 export default styled(Feedback)`
+min-height: 100vh;
+background:
+    url(${backgroundImage}) center/cover no-repeat,
+    linear-gradient(135deg, #0066ff, #66b3ff, #ffffff);
+
   .feedback-wrapper {
     display: flex;
     justify-content: center;

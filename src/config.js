@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import smLogo from './img/Axioslogo-RGB-white.png';
+import smLogo from './img/AI+NY.png';
 import placeholder from './img/placeholder-headshot.png';
 
 // header will not take up vertical height when transparent, so you need to be mindful of overlap

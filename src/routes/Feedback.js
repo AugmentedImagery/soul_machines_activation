@@ -7,8 +7,9 @@ import { useHistory } from 'react-router-dom';
 import {
   Star, StarFill, XCircle
 } from 'react-bootstrap-icons';
-import Header from '../components/Header';
+// import Header from '../components/Header';
 import { headerHeight, landingBackgroundImage } from '../config';
+import backgroundImage from '../img/gradient-3.png';
 
 function Feedback({ className }) {
   const { presumeTimeout } = useSelector(({ sm }) => ({ ...sm }));
@@ -167,7 +168,7 @@ function Feedback({ className }) {
         </div>
       )}
 
-      <Header />
+      {/* <Header /> */}
 
       <div className="feedback-container">
         <div className="feedback-card">
@@ -249,7 +250,9 @@ Feedback.propTypes = {
 
 export default styled(Feedback)`
   min-height: 100vh;
-  background: linear-gradient(145deg, #f9fafb 0%, #edf2f7 100%);
+  background:
+    url(${backgroundImage}) center/cover no-repeat,
+    linear-gradient(135deg, #0066ff, #66b3ff, #ffffff);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   .feedback-container {
