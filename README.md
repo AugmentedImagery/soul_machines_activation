@@ -1,8 +1,8 @@
-# Soul Machines React Reference UI
+# Soul Machines UI
 
-This template succeeds the previous [react-template](https://github.com/soulmachines/react-template). This is re-write is based on [create-react-app](https://github.com/facebook/create-react-app) and is designed mainly to provide a simple and familiar developer experience.
+This template succeeds the previous [react-template](https://github.com/soulmachines/react-template). This is re-write is based on [create-react-app](https://github.com/facebook/create-react-app) and is designed to provide a simple and familiar developer experience.
 
-This template contains a functional example of how the user flow and interaction with the Digital Person should work in an expo/, and likley require styling chanages to suit branding requirements.
+This template contains a functional example of how the user flow and interaction with the Digital Person should work in an expo setting where multiple people can walk up and interact with the avatar, and likley require styling chanages to suit branding requirements. This specific UI is meant to be paired with an IPAD/Screen that explains the user flow. The user flow goes as follows - press any key to begin, talk or type to AI for 3 minutes(cutoff) or press esc to exit, provide feedback, loop back to landing page.  
 
 ## Setup
 
