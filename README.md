@@ -2,11 +2,17 @@
 
 This template succeeds the previous [react-template](https://github.com/soulmachines/react-template). This is re-write is based on [create-react-app](https://github.com/facebook/create-react-app) and is designed mainly to provide a simple and familiar developer experience.
 
-This template contains functional examples of how the user flow and interaction with the Digital Person should work, and likley require styling chanages to suit branding requirements.
+This template contains a functional example of how the user flow and interaction with the Digital Person should work in an expo/, and likley require styling chanages to suit branding requirements.
 
 ## Setup
 
 In order to run this application, you'll either need an API key or a token server. Most projects will use an API key--token servers are only necessary when interfacing with a non-native NLP through a orchestration server.
+
+###1 WALK OR CHRIS IF YOU HAVE TO READ THIS WE PROBABLY SHOULD'VE TAKEN OUT THAT IMPORTANT PERSON INSURANCE LOL
+1. CLICK THE GREEN CODE BUTTON ON THIS PAGE AND USE THE "OPEN WITH GITHUB DESKTOP" FEATURE
+2. FOLLOW ALONG WITH WHAT IT TELLS YOU AND ONCE ITS DONE THE PROGRAM SHOULD BE ON YOUR LAPTOP
+3. NOW FOLLOW THE INSTRUCTIONS BELOW
+
 
 ### Copy `.env.example` contents into `.env`
 Create an empty text file called `.env` and copy the contents of `.env.example` into it. These environment variables are required for the UI to run.
