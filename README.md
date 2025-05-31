@@ -8,18 +8,24 @@ This template contains a functional example of how the user flow and interaction
 
 In order to run this application, you'll either need an API key or a token server. Most projects will use an API key--token servers are only necessary when interfacing with a non-native NLP through a orchestration server.
 
-###1 WALK OR CHRIS IF YOU HAVE TO READ THIS WE PROBABLY SHOULD'VE TAKEN OUT THAT IMPORTANT PERSON INSURANCE LOL
-1. CLICK THE GREEN CODE BUTTON ON THIS PAGE AND USE THE "OPEN WITH GITHUB DESKTOP" FEATURE
-2. FOLLOW ALONG WITH WHAT IT TELLS YOU AND ONCE ITS DONE THE PROGRAM SHOULD BE ON YOUR LAPTOP
-3. NOW FOLLOW THE INSTRUCTIONS BELOW
+### WALK OR CHRIS IF YOU HAVE TO READ THIS THEN I GOT HIT BY BUS AND WE PROBABLY SHOULD'VE TAKEN OUT THAT IMPORTANT PERSON INSURANCE LOL
+### ASK LARA FOR HELP IF NEEDED
+1. CREATE A GITHUB ACCOUNT AND COME BACK TO THIS PAGE AFTER
+2. CLICK THE GREEN "CODE" BUTTON ON THIS PAGE AND USE THE "OPEN WITH GITHUB DESKTOP" FEATURE
+3. FOLLOW ALONG WITH WHAT IT TELLS YOU AND ONCE ITS DONE THE PROGRAM SHOULD BE ON YOUR LAPTOP
+4. GO DOWNLOAD "VISUAL STUDIO CODE" AND THEN USE GITHUB DESKTOP APP TO OPEN IT IN VISUAL STUDIO CODE
+5. TOP BAR SHOULD HAVE A TERMINAL TAB, CLICK IT AND OPEN NEW TERMINAL
+6. LEFT BAR HAS ALL THE DIRECTORIES/FILES, THESE MATCH THE LAYOUT AND STRUCTURE OF THE FILES ON YOUR COMPUTER, ITS THE SAME IN YOUR FINDER AS IT IS IN THAT LEFT BAR
+7. RIGHT CLICK ON WHATEVER DIRECTORY THAT THE .env.example file is in and create new file called .env
+8. NOW FOLLOW THE INSTRUCTIONS BELOW
+9. ONCE YOU FINISH THE INSTRUCTIONS BELOW YOU CAN CHANGE THE LANDING PAGE VIDEO BY GOING TO LANDING.JS AND SEARCHING ".MP4"(CMD +F OR CNTRL + F TO SEARCH) AND CHANGE THAT FILE NAME REFERENCE TO THE FILE NAME OF THE NEW VIDEO AND PUT THE NEW VIDEO IN THE DIRECTORY THAT YOU SEE IN THAT FILE NAME REFERENCE
 
-
-### Copy `.env.example` contents into `.env`
+### Copy `.env.example` file contents into `.env`
 Create an empty text file called `.env` and copy the contents of `.env.example` into it. These environment variables are required for the UI to run.
 
 If using an API key, set `REACT_APP_PERSONA_AUTH_MODE` to `0` and populate `REACT_APP_API_KEY` with your key.
 
-If using an orchestration server, set `REACT_APP_PERSONA_AUTH_MODE` to `1` and populate `REACT_APP_TOKEN_URL` with your token server endpoint and set `REACT_APP_TOKEN_URL` to `true`.
+If using an orchestration server(#WE ARE NOT#), set `REACT_APP_PERSONA_AUTH_MODE` to `1` and populate `REACT_APP_TOKEN_URL` with your token server endpoint and set `REACT_APP_TOKEN_URL` to `true`.
 
 ### `npm install`
 Run to install the project's dependencies.
@@ -27,7 +33,7 @@ Run to install the project's dependencies.
 ### `npm start`
 Starts the development server. Open [http://localhost:3000](http://localhost:3000) to view it in the browser. The page will automatically reload when you make changes.
 
-### `npm run build`
+### `npm run build` (#DON'T NEED TO DO THIS FOR OUR PURPOSES AT THE EXPO#)
 Builds the app for production to the `build` folder. The files will be bundled and minified for production.
 
 ## License
