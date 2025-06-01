@@ -6,6 +6,20 @@ import { useDispatch } from 'react-redux';
 // import { useHistory } from 'react-router-dom';
 import { sendTextMessage } from '../store/sm';
 
+// CONFIGURABLE QUESTIONS - Easy to modify when you get final questions from client
+const PRESET_QUESTIONS = {
+  0: "What services do you offer?",
+  1: "How much does it cost?",
+  2: "What are your business hours?",
+  3: "How can I contact support?",
+  4: "Do you offer refunds?",
+  5: "What payment methods do you accept?",
+  6: "How long does delivery take?",
+  7: "Do you have a warranty?",
+  8: "Can I track my order?",
+  9: "What's your return policy?"
+};
+
 function TextInput({ className }) {
   const [textInput, setText] = useState('');
   const dispatch = useDispatch();
@@ -30,9 +44,10 @@ function TextInput({ className }) {
     }
   }, []);
 
-  // Handle escape key to exit to feedback (navigation only)
+  // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = async (event) => {
+      // Handle escape key to exit to feedback (navigation only)
       if (event.key === 'Escape') {
         console.log('🚨 ESC key detected in TextInput - handling navigation only');
         
@@ -44,6 +59,36 @@ function TextInput({ className }) {
         localStorage.clear();
         // history.push('/feedback');
         window.location.href = `/feedback?refresh=${Date.now()}`;
+        return;
+      }
+
+      // Handle number keys (0-9) for preset questions
+      if (event.key >= '0' && event.key <= '9') {
+        // Only trigger if the input is focused or no other input element is focused
+        const activeElement = document.activeElement;
+        const isInputFocused = activeElement === inputRef.current;
+        const isOtherInputFocused = activeElement && (
+          activeElement.tagName === 'INPUT' || 
+          activeElement.tagName === 'TEXTAREA' ||
+          activeElement.isContentEditable
+        );
+
+        // Only fill preset question if our input is focused or no input is focused
+        if (isInputFocused || !isOtherInputFocused) {
+          event.preventDefault(); // Prevent default number input
+          const questionKey = event.key;
+          const presetQuestion = PRESET_QUESTIONS[questionKey];
+          
+          if (presetQuestion) {
+            console.log(`🔢 Number key ${questionKey} pressed - filling preset question`);
+            setText(presetQuestion);
+            
+            // Focus the input after filling the question
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }
+        }
       }
     };
 
@@ -52,7 +97,7 @@ function TextInput({ className }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []); // No dependencies needed since we're not using transcript here
+  }, []); // No dependencies needed
 
   return (
     <div className={className}>
@@ -76,13 +121,9 @@ function TextInput({ className }) {
         </div>
       </form>
 
-      <div className="escape-hint">
-        <div className="escape-instruction">
-          Press
-          {' '}
-          <kbd>ESC</kbd>
-          {' '}
-          to exit
+      <div className="shortcuts-hint">
+        <div className="shortcut-instruction">
+          Press <kbd>0-9</kbd> for quick questions • Press <kbd>ESC</kbd> to exit
         </div>
       </div>
     </div>
@@ -165,16 +206,16 @@ export default styled(TextInput)`
     }
   }
 
-  .escape-hint {
+  .shortcuts-hint {
     text-align: center;
     margin-top: 1rem;
 
-    .escape-instruction {
+    .shortcut-instruction {
       background: rgba(0, 0, 0, 0.8);
       color: white;
       padding: 0.75rem 1.5rem;
       border-radius: 12px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       display: inline-block;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -195,15 +236,14 @@ export default styled(TextInput)`
     kbd {
       background: #f3f4f6;
       color: #374151;
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      font-size: 1rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
       font-weight: 700;
       border: 2px solid #d1d5db;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       margin: 0 0.25rem;
       display: inline-block;
-      min-width: 45px;
       text-align: center;
     }
   }
