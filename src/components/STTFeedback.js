@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { exportTranscriptToDatabase } from '../utils/transcriptExport';
 
 function STTFeedback({ className }) {
   const {
@@ -33,7 +34,52 @@ function STTFeedback({ className }) {
     return !isSysMsg && t.text.trim().length > 0;
   });
 
-  // Show last 8 messages, most recent first - only if we have actual conversation
+  // Add ESC key handler to export transcript
+  useEffect(() => {
+    const handleKeyDown = async (event) => {
+      if (event.key === 'Escape') {
+        console.log('🚨 ESC detected in STTFeedback - exporting transcript...');
+        console.log('📊 Filtered transcript to export:', transcriptOnlyText);
+        
+        try {
+          // Use the already filtered transcript data
+          const exportData = {
+            sessionId: `session_${Date.now()}`,
+            timestamp: new Date().toISOString(),
+            messages: transcriptOnlyText.map(entry => ({
+              source: entry.source,
+              text: entry.text,
+              timestamp: entry.timestamp || new Date().toISOString(),
+            })),
+            messageCount: transcriptOnlyText.length,
+            sessionDuration: null,
+            exitMethod: 'ESC_KEY',
+          };
+
+          console.log('📤 Exporting data:', exportData);
+          
+          // Call the export function with the raw transcript (the function will filter it)
+          await exportTranscriptToDatabase(transcript);
+          console.log('✅ Transcript exported successfully from STTFeedback');
+        } catch (error) {
+          console.error('❌ Failed to export transcript from STTFeedback:', error);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [transcript, transcriptOnlyText]); // Depend on the transcript data
+
+  // Add debug logging
+  useEffect(() => {
+    console.log('📋 STTFeedback - Raw transcript:', transcript);
+    console.log('📋 STTFeedback - Filtered transcript:', transcriptOnlyText);
+    console.log('📋 STTFeedback - Transcript length:', transcript?.length || 0);
+    console.log('📋 STTFeedback - Filtered length:', transcriptOnlyText?.length || 0);
+  }, [transcript, transcriptOnlyText]);
+
+  // Show last 3 messages, most recent first - only if we have actual conversation
   const recentTranscript = transcriptOnlyText.length > 0
     ? transcriptOnlyText.slice(-3).reverse()
     : [];

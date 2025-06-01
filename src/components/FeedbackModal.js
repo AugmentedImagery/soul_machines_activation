@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import breakpoints from '../utils/breakpoints';
 import { landingBackgroundImage } from '../config';
 import backgroundImage from '../img/gradient-3.png';
+import { exportFeedbackToDatabase } from '../utils/feedbackExport'; // Add this import
 
 function FeedbackModal({ className }) {
   const nStars = 5;
@@ -28,8 +29,19 @@ function FeedbackModal({ className }) {
       }, 100);
     }
   }, [ratingSelected]);
+
+  // Helper function to get rating text
+  const getRatingText = () => {
+    if (rating < 0) return '';
+
+    const ratingTexts = [
+      'Poor', 'Fair', 'Good', 'Very Good', 'Excellent!',
+    ];
+    return ratingTexts[rating];
+  };
+
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = async (event) => {
       const key = parseInt(event.key, 10);
 
       // Handle number keys 1-5 for rating
@@ -41,8 +53,28 @@ function FeedbackModal({ className }) {
       }
 
       // Handle Enter key for submission (only if rating is selected)
-      if (event.key === 'Enter' && ratingSelected) {
+      if (event.key === 'Enter' && ratingSelected && !submitted) {
         event.preventDefault();
+        
+        console.log('📝 Submitting feedback...');
+        
+        // Prepare feedback data
+        const feedbackData = {
+          rating: rating + 1, // Convert 0-4 to 1-5
+          ratingText: getRatingText(),
+          writtenFeedback: writtenFeedback.trim(),
+        };
+
+        try {
+          // Export feedback to database
+          await exportFeedbackToDatabase(feedbackData);
+          console.log('✅ Feedback submitted and saved to database');
+        } catch (error) {
+          console.error('❌ Failed to save feedback to database:', error);
+          // Continue with submission even if database save fails
+        }
+
+        // Set submitted state
         setSubmitted(true);
 
         // Navigate to landing page after showing thank you message
@@ -57,7 +89,7 @@ function FeedbackModal({ className }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [history, ratingSelected]);
+  }, [history, ratingSelected, rating, writtenFeedback, submitted]); // Added dependencies
 
   // generate array of clickable stars for rating
   const stars = Array.from(Array(nStars)).map((_, i) => {
@@ -96,15 +128,6 @@ function FeedbackModal({ className }) {
       </button>
     );
   });
-
-  const getRatingText = () => {
-    if (rating < 0) return '';
-
-    const ratingTexts = [
-      'Poor', 'Fair', 'Good', 'Very Good', 'Excellent!',
-    ];
-    return ratingTexts[rating];
-  };
 
   return (
     <div className={className}>

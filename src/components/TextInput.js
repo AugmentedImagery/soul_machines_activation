@@ -17,6 +17,7 @@ function TextInput({ className }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (textInput.trim()) {
+      console.log('📤 Sending message:', textInput); // Debug log
       dispatch(sendTextMessage({ text: textInput }));
       setText('');
     }
@@ -29,11 +30,16 @@ function TextInput({ className }) {
     }
   }, []);
 
-  // Handle escape key to exit to feedback
+  // Handle escape key to exit to feedback (navigation only)
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = async (event) => {
       if (event.key === 'Escape') {
-        // Clear all storage and force hard reload to feedback (same as timer)
+        console.log('🚨 ESC key detected in TextInput - handling navigation only');
+        
+        // Small delay to let STTFeedback handle the export first
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Clear all storage and force hard reload to feedback
         sessionStorage.clear();
         localStorage.clear();
         // history.push('/feedback');
@@ -46,7 +52,7 @@ function TextInput({ className }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, []); // No dependencies needed since we're not using transcript here
 
   return (
     <div className={className}>

@@ -15,6 +15,7 @@ import {
 } from '../config';
 import TextInput from '../components/TextInput';
 import STTFeedback from '../components/STTFeedback';
+import { exportTranscriptToDatabase } from '../utils/transcriptExport';
 
 function DPChat({
   className,
@@ -25,6 +26,7 @@ function DPChat({
     disconnected,
     error,
     micOn,
+    transcript, // Added transcript to selector
     // speechState,
   } = useSelector(({ sm }) => ({ ...sm }));
 
@@ -78,10 +80,22 @@ function DPChat({
         // Time's up - force complete refresh after feedback
         if (newTime <= 0) {
           clearInterval(timer);
-          // Clear all storage and force hard reload to feedback
-          sessionStorage.clear();
-          localStorage.clear();
-          window.location.href = `/feedback?refresh=${Date.now()}`;
+
+          // Export transcript before navigation
+          exportTranscriptToDatabase(transcript)
+            .then(() => {
+              console.log('Transcript exported successfully via timer expiration');
+            })
+            .catch((error2) => {
+              console.error('Failed to export transcript via timer:', error2);
+            })
+            .finally(() => {
+              // Clear all storage and force hard reload to feedback
+              sessionStorage.clear();
+              localStorage.clear();
+              window.location.href = `/feedback?refresh=${Date.now()}`;
+            });
+
           return 0;
         }
 
@@ -90,7 +104,7 @@ function DPChat({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [connected, showWarning, history]);
+  }, [connected, showWarning, history, transcript]); // Added transcript as dependency
 
   const handleResize = () => {
     if (connected) {
