@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import smLogo from './img/AI+NY.png';
-import placeholder from './img/placeholder-headshot.png';
+import placeholder from './img/VE_002.jpg';
 
 // header will not take up vertical height when transparent, so you need to be mindful of overlap
 export const transparentHeader = true;
