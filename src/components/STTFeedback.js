@@ -129,7 +129,7 @@ function STTFeedback({ className }) {
                           opacity: '0.8',
                         }}
                       >
-                        {entry.source === 'user' ? 'You' : 'AI Assistant'}
+                        {entry.source === 'user' ? 'You' : 'AI CEO'}
                       </div>
                       <div
                         className="message-text"

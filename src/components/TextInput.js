@@ -8,16 +8,16 @@ import { sendTextMessage } from '../store/sm';
 
 // CONFIGURABLE QUESTIONS - Easy to modify when you get final questions from client
 const PRESET_QUESTIONS = {
-  0: "What services do you offer?",
-  1: "How much does it cost?",
-  2: "What are your business hours?",
-  3: "How can I contact support?",
-  4: "Do you offer refunds?",
-  5: "What payment methods do you accept?",
-  6: "How long does delivery take?",
-  7: "Do you have a warranty?",
-  8: "Can I track my order?",
-  9: "What's your return policy?"
+  0: "What keeps CEO's up at night when it comes to AI?",
+  1: "Should I be worried AI will replace my job or excited it might help me do better??",
+  2: "Are most CEO's planning to use AI to cut costs or to innovate?",
+  3: "What's the difference between traditional AI and agentic AI?",
+  4: "How rapidly will AI shift jobs in the future?",
+  5: "What's the one thing bussiness leaders aren't saying out loud about AI and jobs?",
+  6: "What are some common trends you see happening in AI?",
+  7: "Are leaders investing in AI because they believe in it or because they're not afraid to?",
+  8: "What leaders or industries are rushing to adopt AI and why??",
+  9: "What's going on around the venue today?"
 };
 
 function TextInput({ className }) {
